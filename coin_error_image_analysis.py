@@ -232,7 +232,7 @@ import os
 ngrok.set_auth_token("2o5PhDblHZJyMFrb2sA5wEDLdH2_Yi5UMpDK1gkRrFodwx8U")
 
 # Load the saved model
-model = tf.keras.models.load_model("coin_model.h5")
+model = tf.keras.models.load_model("coin_model.keras")
 
 # Prediction function
 def predict_coin(image_path):
@@ -242,7 +242,7 @@ def predict_coin(image_path):
     img_array /= 255.0  # Normalize
 
     prediction = model.predict(img_array)
-    return "Double Die" if prediction[0][0] > 0.5 else "Single Die"
+    return "Double Die" if prediction[0][0] > 0.4 else "Single Die"
 
 # Flask app setup
 app = Flask(__name__)
