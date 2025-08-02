@@ -235,14 +235,20 @@ ngrok.set_auth_token("2o5PhDblHZJyMFrb2sA5wEDLdH2_Yi5UMpDK1gkRrFodwx8U")
 model = tf.keras.models.load_model("coin_model.keras")
 
 # Prediction function
-def predict_coin(image_path):
-    img = image.load_img(image_path, target_size=(224, 224))
+def predict_coin(img):
+    img = img.resize((224, 224))
     img_array = image.img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0)
-    img_array /= 255.0  # Normalize
-
+    img_array /= 255.0
     prediction = model.predict(img_array)
-    return "Double Die" if prediction[0][0] > 0.4 else "Single Die"
+    confidence = float(prediction[0][0])
+    
+    # Adjust threshold, e.g., 0.3 or 0.4, if you get mostly single die
+    threshold = 0.4
+    if confidence > threshold:
+        return ("Double Die", confidence)
+    else:
+        return ("Single Die", 1 - confidence)
 
 # Flask app setup
 app = Flask(__name__)
