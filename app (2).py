@@ -1,4 +1,4 @@
-%%writefile app.py
+
 import os
 import gdown
 import streamlit as st
