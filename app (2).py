@@ -1,27 +1,35 @@
+%%writefile app.py
+import os
+import gdown
 import streamlit as st
 import tensorflow as tf
 from tensorflow.keras.preprocessing import image
 import numpy as np
 from PIL import Image
 
-# Load your model
+# Your Drive model file ID
+FILE_ID = "1M6BBw9LYjJdV5oYO_OK2FOb54QzIeQKO"
+MODEL_PATH = "coin_model.keras"
+
 @st.cache_resource
 def load_model():
-    return tf.keras.models.load_model("coin_model.keras")
+    if not os.path.exists(MODEL_PATH):
+        gdown.download(f"https://drive.google.com/uc?id={FILE_ID}", MODEL_PATH, quiet=False)
+    return tf.keras.models.load_model(MODEL_PATH)
 
 model = load_model()
 
-# Predict function
+# Prediction function
 def predict_coin(img):
     img = img.resize((224, 224))
     img_array = image.img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0)
-    img_array /= 255.0
+    img_array = img_array / 255.0
     prediction = model.predict(img_array)
     confidence = float(prediction[0][0])
     return ("Double Die", confidence) if confidence > 0.5 else ("Single Die", 1 - confidence)
 
-# Streamlit app layout
+# Streamlit UI
 st.set_page_config(page_title="CoinSight - Error Detector", layout="centered")
 st.title("🪙 CoinSight - Coin Error Detection")
 st.write("Upload a coin image and CoinSight will predict if it's a **Double Die** or **Single Die**.")
